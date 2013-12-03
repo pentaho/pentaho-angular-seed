@@ -1,0 +1,107 @@
+<project name="${plugin.id}" basedir="." default="default">
+
+  <!-- property overrides -->
+  <property name="js.module.script.dir" value="package-res/resources/web/app/js"/>
+  <!-- end property overrides -->
+
+  <!-- Import the subfloor-pkg.xml file which contains all the default ant targets -->
+  <import file="build-res/subfloor-js.xml"/>
+
+  <!-- location to expand the zipped contents of js dependencies (to be available for testing) -->
+  <property name="js.expanded.lib.dir" value="package-res/resources/web/app/lib/provided"/>
+
+  <property name="js.requires.node" value="true"/>
+  <property name="js.requires.karma" value="true"/>
+  <property name="js.karma.config" value="config/karma.ci.conf.js"/>
+  <property environment="env"/>
+
+  <target name="resolve-js" depends="resolve,subfloor-js.resolve-js">
+    <unzip dest="${js.expanded.lib.dir}" overwrite="true">
+      <fileset file="${js.lib.dir}/*.zip" />
+      <patternset>
+        <exclude name="**/*.jar"/>
+        <exclude name="**/plugin*.xml"/>
+        <exclude name="**/settings.xml"/>
+        <exclude name="**/themes.xml"/>
+      </patternset>
+    </unzip>
+  </target>
+
+  <target name="clean-js" depends="subfloor-js.clean-js">
+    <delete dir="${js.expanded.lib.dir}" />
+  </target>
+
+  <target name="npm-install">
+    <exec executable="npm">
+      <arg value="install"/>
+    </exec>
+  </target>
+
+  <available file="karma" filepath="${env.PATH}" property="karma-is-available" />
+
+  <target name="test-js" depends="install-antcontrib, npm-install">
+    <if>
+      <isset property="karma-is-available" />
+      <then>
+        <!-- we have karma available, use it to run the tests -->
+        <exec executable="karma">
+          <arg value="start"/>
+          <arg value="${js.karma.config}"/>
+          <!-- if we are running via ant, then assume we must 'single-run' -->
+          <arg value="--single-run"/>
+        </exec>
+      </then>
+      <else>
+        <fail>Karma is not available. Unit tests could not be run</fail>
+      </else>
+    </if>
+  </target>
+
+  <target name="dist-js" depends="quick-build.js, subfloor-js.dist-js">
+  </target>
+
+  <target name="quick-build.js" description="Builds debug JS modules for development">
+    <delete dir="${js.module.script.agg.dir}/app" />
+    <delete dir="${js.build.output.dir}" />
+    <copy todir="${js.module.script.agg.dir}/app" overwrite="true">
+      <fileset dir="${js.module.script.dir}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+    <exec executable="node">
+      <arg value="node_modules/requirejs/bin/r.js"/>
+      <arg value="-o"/>
+      <arg value="build-res/javascript.build.js"/>
+    </exec>
+  </target>
+
+
+  <!-- Override assembly of the artifacts to be packaged so we can remove un-needed js files -->
+  <target name="assemble" depends="assemble.init,assemble.copy-libs">
+    <copy todir="${approot.stage.dir}" overwrite="true">
+      <fileset dir="${package.resdir}">
+        <!-- don't copy the js files that will be provided by the platform  -->
+        <exclude name="**/resources/web/app/lib/provided/**" />
+        <!-- don't copy anything in a test folder -->
+        <exclude name="**/test/**" />
+        <!-- remove all standalone references as well -->
+        <exclude name="**/standalone*" />
+      </fileset>
+    </copy>
+    <chmod perm="a+x" dir="${stage.dir}" includes="**/*.sh" />
+  </target>
+
+
+  <target name="lib.dir.check">
+    <condition property="lib.dir.exists">
+      <available file="${approot.stage.dir}/lib" type="dir"/>
+    </condition>
+  </target>
+
+  <target name="assemble.copy-libs" depends="lib.dir.check" if="lib.dir.exists">
+    <antcall target="subfloor-pkg.assemble.copy-libs" />
+  </target>
+
+
+
+</project>

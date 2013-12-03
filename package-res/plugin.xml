@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin title="_sample_" loader="OVERRIDING">
+
+  <static-paths>
+    <static-path url="/_sample_/resources" localFolder="resources"/>
+  </static-paths>
+
+  <external-resources>
+    <file context="requirejs">content/_sample_/resources/web/app/_sample_-require-js-cfg.js</file>
+    <file context="mantle">content/_sample_/resources/web/app/js/puc-plugin.js</file>
+  </external-resources>
+
+</plugin>

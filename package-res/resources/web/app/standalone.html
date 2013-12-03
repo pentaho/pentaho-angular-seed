@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" >
+<head>
+  <meta charset="utf-8">
+  <title>Pentaho Sample - Standalone</title>
+  <link rel="stylesheet" href="css/app.css">
+
+  <link rel="stylesheet" href="lib/provided/common-ui/resources/themes/crystal/bootstrap/css/bootstrap-namespaced.css">
+  <link rel="stylesheet" href="lib/provided/common-ui/resources/themes/css/angular-animations.css">
+  <link rel="stylesheet" href="lib/provided/common-ui/resources/themes/crystal/globalCrystal.css">
+  
+  <script src='lib/provided/common-ui/resources/web/require.js'></script>
+  <script src="standalone-require-config.js"></script>
+
+</head>
+<body class="bootstrap">
+
+  <div ng-view class='ng-app-element' animate='slide-left'>
+  </div>
+
+  <!-- bootstrap the angluar app -->
+  <script src="js/main.js"></script>
+  
+</body>
+</html>
