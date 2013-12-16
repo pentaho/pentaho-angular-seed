@@ -1,5 +1,5 @@
 /* Filters */
-pen.define(["common-ui/angular","common-ui/angular-resource"], function(angular, Resource){
+define(["common-ui/angular","common-ui/angular-resource"], function(angular, Resource){
 
 	'use strict';
 

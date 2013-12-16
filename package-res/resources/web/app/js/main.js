@@ -1,4 +1,4 @@
-pen.require([
+require([
   "common-ui/angular", 
   "common-ui/angular-route",
   "common-ui/AnimatedAngularPlugin",

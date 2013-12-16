@@ -1,4 +1,13 @@
-pen.requirejs.config({
+
+pen = {};
+pen.require = function() {
+    return require.apply(this, arguments);
+} 
+pen.define = function() {
+    return define.apply(this, arguments);
+}
+
+requirejs.config({
   baseUrl: '.',
   paths: {
     'common-ui/jquery': 'lib/provided/common-ui/resources/web/jquery/jquery-1.9.1.min',
