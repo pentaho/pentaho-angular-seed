@@ -1,4 +1,4 @@
-pen.define([
+define([
 	"common-ui/angular",
 	"common-ui/angular-resource",
 	"common-ui/angular-route",

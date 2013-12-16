@@ -1,5 +1,5 @@
 /* App Module */
-var deps = [
+define([
   "common-ui/angular", 
   "common-ui/angular-route", 
   "common-ui/AnimatedAngularPluginHandler",
@@ -9,9 +9,7 @@ var deps = [
   "_sample_/util",
   "common-ui/angular-ui-bootstrap",
   "common-ui/angular-resource"
-  ];
-
-pen.define(deps, function(angular, Route, AnimatedAngularPluginHandler, controllers, services, filters, Util){
+  ], function(angular, Route, AnimatedAngularPluginHandler, controllers, services, filters, Util){
   'use strict';
   var pluginHandler = new AnimatedAngularPluginHandler();
   pluginHandler.module('_sample_App', ['ui.bootstrap', 'ngResource']);
