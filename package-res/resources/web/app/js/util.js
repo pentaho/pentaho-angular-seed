@@ -1,4 +1,4 @@
-pen.define([], function(){
+define([], function(){
 	'use strict';
 
   var urlPrefix = "";

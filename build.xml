@@ -1,10 +1,12 @@
-<project name="${plugin.id}" basedir="." default="default">
+<project name="${plugin.id}" basedir="." default="default" xmlns:ivy="antlib:org.apache.ivy.ant">
 
   <!-- property overrides -->
-  <property name="js.module.script.dir" value="package-res/resources/web/app/js"/>
+  <property name="js.module.dir" value="resources/web/app/js"/>
+  <property name="js.module.script.dir" value="package-res/${js.module.dir}"/>
+  <property name="js.module.lib.dir" value="package-res/resources/web/app/lib"/>
   <!-- end property overrides -->
 
-  <!-- Import the subfloor-pkg.xml file which contains all the default ant targets -->
+  <!-- Import the subfloor-js.xml file which contains all the default ant targets -->
   <import file="build-res/subfloor-js.xml"/>
 
   <!-- location to expand the zipped contents of js dependencies (to be available for testing) -->
@@ -29,6 +31,7 @@
 
   <target name="clean-js" depends="subfloor-js.clean-js">
     <delete dir="${js.expanded.lib.dir}" />
+    <delete dir="${js.module.script.agg.dir}" />
   </target>
 
   <target name="npm-install">
@@ -57,21 +60,42 @@
     </if>
   </target>
 
-  <target name="dist-js" depends="quick-build.js, subfloor-js.dist-js">
-  </target>
-
-  <target name="quick-build.js" description="Builds debug JS modules for development">
+  <target name="setup-dirs" description="Setups dirs needed for r.js build">
     <delete dir="${js.module.script.agg.dir}/app" />
+    <delete dir="${js.module.script.agg.dir}/lib" />
     <delete dir="${js.build.output.dir}" />
     <copy todir="${js.module.script.agg.dir}/app" overwrite="true">
       <fileset dir="${js.module.script.dir}">
         <include name="**/*"/>
       </fileset>
     </copy>
+    <copy todir="${js.module.script.agg.dir}/lib" overwrite="true">
+      <fileset dir="${js.module.lib.dir}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="dist-js" depends="release-build-map.js, subfloor-js.dist-js"/>
+  <target name="dist-dev-js" depends="quick-build.js, subfloor-js.dist-js"/>
+
+  <target name="quick-build.js" description="Builds debug JS modules for development" depends="setup-dirs">
     <exec executable="node">
       <arg value="node_modules/requirejs/bin/r.js"/>
       <arg value="-o"/>
       <arg value="build-res/javascript.build.js"/>
+      <arg value="optimize=none"/>
+    </exec>
+  </target>
+
+  <target name="release-build-map.js" description="Builds debug JS modules for release" depends="setup-dirs">
+    <exec executable="node">
+      <arg value="node_modules/requirejs/bin/r.js"/>
+      <arg value="-o"/>
+      <arg value="build-res/javascript.build.js"/>
+      <arg value="optimize=uglify2"/>
+      <arg value="generateSourceMaps=true"/>
+      <arg value="preserveLicenseComments=false"/>
     </exec>
   </target>
 
@@ -88,6 +112,18 @@
         <exclude name="**/standalone*" />
       </fileset>
     </copy>
+    <!-- bring in the 'compiled' js scripts -->
+    <copy todir="${approot.stage.dir}/${js.module.dir}" overwrite="true">
+      <fileset dir="${js.build.output.dir}">
+        <!-- don't copy the js files that will be provided by the platform  -->
+        <exclude name="**/resources/web/app/lib/provided/**" />
+        <!-- don't copy anything in a test folder -->
+        <exclude name="**/test/**" />
+        <!-- remove all standalone references as well -->
+        <exclude name="**/standalone*" />
+        <exclude name="**/build.txt" />
+      </fileset>
+    </copy>
     <chmod perm="a+x" dir="${stage.dir}" includes="**/*.sh" />
   </target>
 
@@ -102,6 +138,24 @@
     <antcall target="subfloor-pkg.assemble.copy-libs" />
   </target>
 
+  <target name="package" depends="assemble,package-zip-no-maps"/>
+  <target name="package-dev" depends="assemble,package-zip"/>
 
+  <target name="package-zip-no-maps">
+    <zip destfile="${dist.dir}/${package.basename}.zip">
+      <zipfileset dir="${stage.dir}" filemode="755">
+        <include name="**/*.sh" />
+        <include name="**/JavaApplicationStub" />
+        <include name="**/*.command" />
+      </zipfileset>
+      <zipfileset dir="${stage.dir}">
+        <exclude name="**/*.sh" />
+        <exclude name="**/JavaApplicationStub" />
+        <exclude name="**/*.command" />
+        <exclude name="**/*.map" />
+        <exclude name="**/*.src.js" />
+      </zipfileset>
+    </zip>
+  </target>
 
 </project>

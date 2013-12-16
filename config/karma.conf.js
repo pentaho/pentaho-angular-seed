@@ -9,6 +9,7 @@ module.exports = function (config) {
       {pattern: 'app/js/*.js', included: false},
       {pattern: 'app/js/**/*.js', included: false},
       {pattern: 'test/unit/**/*.js', included: false},
+      {pattern: 'test/lib/**/*.js', included: false},
       'test/require-config.js'
     ],
 
@@ -16,7 +17,7 @@ module.exports = function (config) {
       'app/standalone-require-config.js',
 
       // don't run tests in dependencies
-      'app/lib/provided/**/*Spec.js'
+      'test/lib/**/*Spec.js'
     ],
 
     // auto run tests when files change
