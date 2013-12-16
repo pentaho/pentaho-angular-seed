@@ -8,6 +8,7 @@ eclipse-bin/
 override.properties
 .classpath
 .project
-package-res/resources/web/app/lib/provided/
+package-res/resources/web/test/lib/
 node_modules/
 /build-res/module-scripts/
+.idea

@@ -7,6 +7,11 @@
 
   <external-resources>
     <file context="requirejs">content/_sample_/resources/web/app/_sample_-require-js-cfg.js</file>
+
+    <!-- core is the "compiled" application, it needs included here so modules can be required -->
+    <!--<file context="mantle">content/_sample_/resources/web/app/js/core.js</file>-->
+
+    <!-- puc-plugin registers itself with mantle, it depends on core.js already have been loaded -->
     <file context="mantle">content/_sample_/resources/web/app/js/puc-plugin.js</file>
   </external-resources>
 
