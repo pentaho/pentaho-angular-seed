@@ -1,1 +1,0 @@
-requireCfg['paths']['_sample_'] = CONTEXT_PATH+'content/_sample_/resources/web/app/js';
